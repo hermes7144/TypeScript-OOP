@@ -4,18 +4,17 @@
     push(value: string): void;
     pop(): string;
   }
-
   type StackNode = {
     value: string;
     next?: StackNode;
   };
-
   class StackImpl implements Stack {
     private _size: number = 0;
     private head?: StackNode;
     get size(): number {
       return this._size;
     }
+
     push(value: string) {
       const node: StackNode = { value, next: this.head };
       this.head = node;
@@ -23,7 +22,7 @@
     }
     pop(): string {
       if (this.head == null) {
-        throw new Error('Stack is empty!');
+        throw new Error('11');
       }
       const node = this.head;
       this.head = node.next;
@@ -31,6 +30,7 @@
       return node.value;
     }
   }
+
   const stack = new StackImpl();
   stack.push('Ellie 1');
   stack.push('Ellies 2');
