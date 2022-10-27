@@ -1,4 +1,4 @@
-import { BaseComponent } from '../../component.js';
+import { BaseComponent } from '../component.js';
 export class NoteComponent extends BaseComponent<HTMLUListElement> {
   constructor(title: string, body: string) {
     super(`<section class="note">

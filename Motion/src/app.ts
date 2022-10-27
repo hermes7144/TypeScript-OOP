@@ -1,27 +1,51 @@
-import { PageComponent } from './components/page.js';
+import { MediaSectionInput } from './components/dialog/input/media-input.js';
+import { TextSectionInput } from './components/dialog/input/text-input.js';
+
+import { InputDialog, MediaData, TextData } from './components/dialog/dialog.js';
+import { Composable, PageComponent, PageItemComponent } from './components/page/page.js';
 import { ImageComponent } from './components/item/image.js';
 import { VideoComponent } from './components/item/video.js';
 import { NoteComponent } from './components/item/note.js';
 import { TodoComponent } from './components/item/todo.js';
+import { Component } from './components/component.js';
+
+type InputComponentConstructor<T = (MediaData | TextData) & Component> = {
+  new (): T;
+};
 
 class App {
-  private readonly page: PageComponent;
-  constructor(appRoot: HTMLElement) {
-    this.page = new PageComponent();
+  private readonly page: Component & Composable;
+  constructor(appRoot: HTMLElement, private dialogeRoot: HTMLElement) {
+    this.page = new PageComponent(PageItemComponent);
     this.page.attachTo(appRoot);
 
-    const image = new ImageComponent('Image Title', 'https://picsum.photos/600/300');
-    image.attachTo(appRoot, 'beforeend');
+    this.bindElementToDialog<MediaSectionInput>('#new-image', MediaSectionInput, (input: MediaSectionInput) => new ImageComponent(input.title, input.url));
 
-    const video = new VideoComponent('Video Title', 'https://www.youtube.com/embed/gALGg2Vu9AI');
-    video.attachTo(appRoot, 'beforeend');
+    this.bindElementToDialog<MediaSectionInput>('#new-video', MediaSectionInput, (input: MediaSectionInput) => new VideoComponent(input.title, input.url));
 
-    const note = new NoteComponent('Note title', 'Note Content');
-    note.attachTo(appRoot, 'beforeend');
+    this.bindElementToDialog<TextSectionInput>('#new-note', TextSectionInput, (input: TextSectionInput) => new NoteComponent(input.title, input.body));
 
-    const todo = new TodoComponent('Todo title', 'Hard Work');
-    todo.attachTo(appRoot, 'beforeend');
+    this.bindElementToDialog<TextSectionInput>('#new-todo', TextSectionInput, (input: TextSectionInput) => new TodoComponent(input.title, input.body));
+  }
+  private bindElementToDialog<T extends (MediaData | TextData) & Component>(selector: string, InputComponent: InputComponentConstructor<T>, makeSection: (input: T) => Component) {
+    const element = document.querySelector(selector)! as HTMLButtonElement;
+    element.addEventListener('click', () => {
+      const dialog = new InputDialog();
+      const input = new InputComponent();
+      dialog.addChild(input);
+      dialog.attachTo(this.dialogeRoot);
+
+      dialog.setOncloseListner(() => {
+        dialog.removeFrom(this.dialogeRoot);
+      });
+
+      dialog.setOnSubmitListner(() => {
+        const image = makeSection(input);
+        this.page.addChild(image);
+        dialog.removeFrom(this.dialogeRoot);
+      });
+    });
   }
 }
 
-new App(document.querySelector('.document')! as HTMLElement);
+new App(document.querySelector('.document')! as HTMLElement, document.body);
