@@ -26,7 +26,18 @@ class App {
     this.bindElementToDialog<TextSectionInput>('#new-note', TextSectionInput, (input: TextSectionInput) => new NoteComponent(input.title, input.body));
 
     this.bindElementToDialog<TextSectionInput>('#new-todo', TextSectionInput, (input: TextSectionInput) => new TodoComponent(input.title, input.body));
+
+    // For demo :)
+    this.page.addChild(new ImageComponent('Image Title', 'https://picsum.photos/800/400'));
+    this.page.addChild(new VideoComponent('Video Title', 'https://youtu.be/D7cwvvA7cP0'));
+    this.page.addChild(new NoteComponent('Note Title', "Don't forget to code your dream"));
+    this.page.addChild(new TodoComponent('Todo Title', 'TypeScript Course!'));
+    this.page.addChild(new ImageComponent('Image Title', 'https://picsum.photos/800/400'));
+    this.page.addChild(new VideoComponent('Video Title', 'https://youtu.be/D7cwvvA7cP0'));
+    this.page.addChild(new NoteComponent('Note Title', "Don't forget to code your dream"));
+    this.page.addChild(new TodoComponent('Todo Title', 'TypeScript Course!'));
   }
+
   private bindElementToDialog<T extends (MediaData | TextData) & Component>(selector: string, InputComponent: InputComponentConstructor<T>, makeSection: (input: T) => Component) {
     const element = document.querySelector(selector)! as HTMLButtonElement;
     element.addEventListener('click', () => {
@@ -35,11 +46,11 @@ class App {
       dialog.addChild(input);
       dialog.attachTo(this.dialogeRoot);
 
-      dialog.setOncloseListner(() => {
+      dialog.setOnCloseListener(() => {
         dialog.removeFrom(this.dialogeRoot);
       });
 
-      dialog.setOnSubmitListner(() => {
+      dialog.setOnSubmitListener(() => {
         const image = makeSection(input);
         this.page.addChild(image);
         dialog.removeFrom(this.dialogeRoot);
